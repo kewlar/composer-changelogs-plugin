@@ -21,6 +21,6 @@
         }
     },
     "extra": {
-        "class": "Kewlar\\Composer\\ComposerChangelogsPlugin"
+        "class": "Kewlar\\Composer\\ChangelogsPlugin"
     }
 }
