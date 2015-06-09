@@ -32,7 +32,6 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
     {
         $this->composer = $composer;
         $this->io = $io;
-        $this->io->write(__CLASS__ . '::'. __METHOD__ . "()");
     }
 
     /**
