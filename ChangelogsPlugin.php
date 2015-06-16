@@ -12,6 +12,7 @@ use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
+use Kewlar\Composer\Exception;
 
 /**
  * Class ChangelogsPlugin
@@ -55,11 +56,22 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
 
     public function onPostDependenciesSolving(InstallerEvent $event)
     {
+        $changelogs = [];
         $operations = $event->getOperations();
         foreach ($operations as $operation) {
             if ($operation instanceof UpdateOperation) {
-                $changelog = self::getChangelog($operation->getInitialPackage(), $operation->getTargetPackage());
-                $this->io->write(self::PAD_STR . $changelog);
+                try {
+                    $changelogs[] = self::getChangelog($operation->getInitialPackage(), $operation->getTargetPackage());
+                } catch (Exception\CouldNotCalculateChangelog $e) {
+                    $changelogs[] = $e->getMessage();
+                }
+            }
+        }
+
+        if (!empty($changelogs)) {
+            $this->io->write(self::PAD_STR . 'CHANGELOGS:');
+            foreach ($changelogs as $changelog) {
+                $this->io->write(self::PAD_STR . self::PAD_STR . $changelog);
             }
         }
     }
@@ -68,8 +80,12 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
     {
         $operation = $event->getOperation();
         if ($operation instanceof UpdateOperation) {
-            $changelog = self::getChangelog($operation->getInitialPackage(), $operation->getTargetPackage());
-            $this->io->write(self::PAD_STR . $changelog);
+            try {
+                $changelog = self::getChangelog($operation->getInitialPackage(), $operation->getTargetPackage());
+            } catch (Exception\CouldNotCalculateChangelog $e) {
+                $changelog = $e->getMessage();
+            }
+            $this->io->write(self::PAD_STR . 'CHANGELOG: ' . $changelog);
         }
     }
 
@@ -78,6 +94,8 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
      *
      * @param PackageInterface $initialPackage
      * @param PackageInterface $targetPackage
+     *
+     * @throws Exception\CouldNotCalculateChangelog
      *
      * @return string
      */
@@ -89,19 +107,19 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
                 // PackageInterface::sourceUrl: https://github.com/sonata-project/SonataCoreBundle.git
                 // PackageInterface::prettyVersion: 2.2 (or 2.4, or master)
                 // Result: https://github.com/sonata-project/SonataCoreBundle/compare/2.2...master
-                $changelog = 'CHANGELOG: ' . preg_replace(
+                return preg_replace(
                         '/\\.git$/',
                         '/compare/' . $initialPackage->getPrettyVersion() . '...' . $targetPackage->getPrettyVersion(),
                         $targetPackage->getSourceUrl()
                     );
-            } else {
-                $changelog = 'Unknown changelog; not a GitHub URL: ' . $initialPackage->getSourceUrl();
             }
-        } else {
-            $changelog = 'Unknown changelog; source URLs don\'t match: ' .
-                $initialPackage->getSourceUrl() . ', ' . $targetPackage->getSourceUrl();
+
+            throw new Exception\CouldNotCalculateChangelog('Unknown changelog; not a GitHub URL: ' . $initialPackage->getSourceUrl());
         }
 
-        return $changelog;
+        throw new Exception\CouldNotCalculateChangelog(
+            'Unknown changelog; source URLs don\'t match: ' .
+            $initialPackage->getSourceUrl() . ', ' . $targetPackage->getSourceUrl()
+        );
     }
 }
