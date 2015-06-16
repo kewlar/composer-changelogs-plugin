@@ -26,18 +26,8 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetChangelog($initialPackageConfig, $targetPackageConfig, $compareUrl)
     {
-        $initialPackage = new CompletePackage(
-            $initialPackageConfig['name'],
-            $initialPackageConfig['version'],
-            $initialPackageConfig['prettyVersion']
-        );
-        $initialPackage->setSourceUrl($initialPackageConfig['sourceUrl']);
-        $targetPackage = new CompletePackage(
-            $targetPackageConfig['name'],
-            $targetPackageConfig['version'],
-            $targetPackageConfig['prettyVersion']
-        );
-        $targetPackage->setSourceUrl($targetPackageConfig['sourceUrl']);
+        $initialPackage = ChangelogsPluginTest::getCompletePackageFromArray($initialPackageConfig);
+        $targetPackage = ChangelogsPluginTest::getCompletePackageFromArray($targetPackageConfig);
         $this->assertEquals(
             $compareUrl,
             ChangelogsPlugin::getChangelog($initialPackage, $targetPackage)
@@ -68,5 +58,24 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
                 'https://github.com/doctrine/instantiator/compare/1.0.4...1.0.5',
             ],
         ];
+    }
+
+    /**
+     * Creates a new CompletePackage instance and populates it with values from $packageConfig.
+     *
+     * @param array $packageConfig Package configuration values.
+     *
+     * @return CompletePackage
+     */
+    private static function getCompletePackageFromArray($packageConfig)
+    {
+        $package = new CompletePackage(
+            $packageConfig['name'],
+            $packageConfig['version'],
+            $packageConfig['prettyVersion']
+        );
+        $package->setSourceUrl($packageConfig['sourceUrl']);
+
+        return $package;
     }
 }
