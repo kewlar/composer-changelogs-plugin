@@ -15,6 +15,11 @@ use Composer\Plugin\PluginInterface;
 
 /**
  * Class ChangelogsPlugin
+ *
+ * A composer plugin for `composer update` that prints links to updated packages' GitHub compare pages
+ * for easier access to package changelogs.
+ *
+ * @author Mindaugas Pelionis <mindaugas.pelionis@gmail.com>
  */
 class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
 {
