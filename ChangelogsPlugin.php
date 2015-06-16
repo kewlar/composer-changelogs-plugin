@@ -114,12 +114,16 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
                     );
             }
 
-            throw new Exception\CouldNotCalculateChangelog('Unknown changelog; not a GitHub URL: ' . $initialPackage->getSourceUrl());
+            throw new Exception\CouldNotCalculateChangelog(
+                'Unknown changelog; not a GitHub URL: ' . $initialPackage->getSourceUrl(),
+                Exception\CouldNotCalculateChangelog::CODE_SOURCEURL_UNSUPPORTED
+            );
         }
 
         throw new Exception\CouldNotCalculateChangelog(
             'Unknown changelog; source URLs don\'t match: ' .
-            $initialPackage->getSourceUrl() . ', ' . $targetPackage->getSourceUrl()
+                $initialPackage->getSourceUrl() . ', ' . $targetPackage->getSourceUrl(),
+            Exception\CouldNotCalculateChangelog::CODE_SOURCEURL_MISMATCH
         );
     }
 }
