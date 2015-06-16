@@ -122,9 +122,16 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
                  Result: https://github.com/sonata-project/SonataCoreBundle/compare/2.2...master
                  */
 
+                $initialVersion = $initialPackage->getPrettyVersion();
+                $targetVersion = $targetPackage->getPrettyVersion();
+                if ($initialVersion === $targetVersion) {
+                    $initialVersion = $initialPackage->getSourceReference();
+                    $targetVersion = $targetPackage->getSourceReference();
+                }
+
                 return preg_replace(
                     '/\\.git$/',
-                    '/compare/' . $initialPackage->getPrettyVersion() . '...' . $targetPackage->getPrettyVersion(),
+                    "/compare/{$initialVersion}...{$targetVersion}",
                     $targetPackage->getSourceUrl()
                 );
             }

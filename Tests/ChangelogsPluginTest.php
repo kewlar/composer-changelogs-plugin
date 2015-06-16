@@ -57,6 +57,24 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
                 ],
                 'https://github.com/doctrine/instantiator/compare/1.0.4...1.0.5',
             ],
+            [
+                [
+                    'name' => 'doctrine/instantiator',
+                    'version' => '9999999-dev',
+                    'prettyVersion' => 'dev-master',
+                    'sourceUrl' => 'https://github.com/doctrine/instantiator.git',
+                    'sourceReference' => '2a86bb6ae49191bd19976408ff19bbe49dace573',
+                ],
+                [
+                    'name' => 'doctrine/instantiator',
+                    'version' => '9999999-dev',
+                    'prettyVersion' => 'dev-master',
+                    'sourceUrl' => 'https://github.com/doctrine/instantiator.git',
+                    'sourceReference' => 'd433578f7d7f3cfa01949582433fe08077681f1f',
+                ],
+                'https://github.com/doctrine/instantiator/compare/' .
+                    '2a86bb6ae49191bd19976408ff19bbe49dace573...d433578f7d7f3cfa01949582433fe08077681f1f',
+            ],
         ];
     }
 
@@ -168,6 +186,9 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
             $packageConfig['prettyVersion']
         );
         $package->setSourceUrl($packageConfig['sourceUrl']);
+        if (isset($packageConfig['sourceReference'])) {
+            $package->setSourceReference($packageConfig['sourceReference']);
+        }
 
         return $package;
     }
