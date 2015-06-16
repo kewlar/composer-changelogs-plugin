@@ -26,13 +26,14 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
 {
     const PAD_STR = '    ';
 
-    /** @type Composer */
+    /** @var Composer */
     protected $composer;
-    /** @type IOInterface */
+
+    /** @var IOInterface */
     protected $io;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function activate(Composer $composer, IOInterface $io)
     {
@@ -41,7 +42,7 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
@@ -54,6 +55,11 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
         ];
     }
 
+    /**
+     * Prints a list of links to package changelogs on the post-dependencies-solving event.
+     *
+     * @param InstallerEvent $event
+     */
     public function onPostDependenciesSolving(InstallerEvent $event)
     {
         $changelogs = [];
@@ -76,6 +82,11 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
         }
     }
 
+    /**
+     * Prints a links to package changelog on the post-package-update event.
+     *
+     * @param PackageEvent $event
+     */
     public function onPostPackageUpdate(PackageEvent $event)
     {
         $operation = $event->getOperation();
@@ -102,16 +113,20 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
     public static function getChangelog(PackageInterface $initialPackage, PackageInterface $targetPackage)
     {
         if ($initialPackage->getSourceUrl() === $targetPackage->getSourceUrl()) {
-            if (preg_match('/^https?:\\/\\/github\\.com\\/[^\\/]+\\/[^\\/]+\\.git$/', $initialPackage->getSourceUrl())) {
-                // Example:
-                // PackageInterface::sourceUrl: https://github.com/sonata-project/SonataCoreBundle.git
-                // PackageInterface::prettyVersion: 2.2 (or 2.4, or master)
-                // Result: https://github.com/sonata-project/SonataCoreBundle/compare/2.2...master
+            $reGithubUrl = '/^https?:\\/\\/github\\.com\\/[^\\/]+\\/[^\\/]+\\.git$/';
+            if (preg_match($reGithubUrl, $initialPackage->getSourceUrl())) {
+                /*
+                 Example:
+                 PackageInterface::sourceUrl: https://github.com/sonata-project/SonataCoreBundle.git
+                 PackageInterface::prettyVersion: 2.2 (or 2.4, or master)
+                 Result: https://github.com/sonata-project/SonataCoreBundle/compare/2.2...master
+                 */
+
                 return preg_replace(
-                        '/\\.git$/',
-                        '/compare/' . $initialPackage->getPrettyVersion() . '...' . $targetPackage->getPrettyVersion(),
-                        $targetPackage->getSourceUrl()
-                    );
+                    '/\\.git$/',
+                    '/compare/' . $initialPackage->getPrettyVersion() . '...' . $targetPackage->getPrettyVersion(),
+                    $targetPackage->getSourceUrl()
+                );
             }
 
             throw new Exception\CouldNotCalculateChangelog(

@@ -15,20 +15,19 @@ use Kewlar\Composer\Exception;
  */
 class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * Checks if ChangelogsPlugin::getChangelog generates an expected result given two packages.
      *
-     * @param array  $initialPackageConfig Configuration values for initial CompletePackage
-     * @param array  $targetPackageConfig  Configuration values for target CompletePackage
+     * @param array  $initialPackageConfig Configuration values for initial CompletePackage.
+     * @param array  $targetPackageConfig  Configuration values for target CompletePackage.
      * @param string $compareUrl           Expected changelog URL.
      *
      * @dataProvider testGetChangelogProvider
      */
     public function testGetChangelog($initialPackageConfig, $targetPackageConfig, $compareUrl)
     {
-        $initialPackage = ChangelogsPluginTest::getCompletePackageFromArray($initialPackageConfig);
-        $targetPackage = ChangelogsPluginTest::getCompletePackageFromArray($targetPackageConfig);
+        $initialPackage = self::getCompletePackageFromArray($initialPackageConfig);
+        $targetPackage = self::getCompletePackageFromArray($targetPackageConfig);
         $this->assertEquals(
             $compareUrl,
             ChangelogsPlugin::getChangelog($initialPackage, $targetPackage)
@@ -73,9 +72,13 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetChangelogException($initialPackageConfig, $targetPackageConfig, $expectedExceptionCode)
     {
-        $initialPackage = ChangelogsPluginTest::getCompletePackageFromArray($initialPackageConfig);
-        $targetPackage = ChangelogsPluginTest::getCompletePackageFromArray($targetPackageConfig);
-        $this->setExpectedException('Kewlar\\Composer\\Exception\\CouldNotCalculateChangelog', '', $expectedExceptionCode);
+        $initialPackage = self::getCompletePackageFromArray($initialPackageConfig);
+        $targetPackage = self::getCompletePackageFromArray($targetPackageConfig);
+        $this->setExpectedException(
+            'Kewlar\\Composer\\Exception\\CouldNotCalculateChangelog',
+            '',
+            $expectedExceptionCode
+        );
         ChangelogsPlugin::getChangelog($initialPackage, $targetPackage);
     }
 
