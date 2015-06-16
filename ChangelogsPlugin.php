@@ -99,7 +99,7 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
      *
      * @return string
      */
-    private static function getChangelog(PackageInterface $initialPackage, PackageInterface $targetPackage)
+    public static function getChangelog(PackageInterface $initialPackage, PackageInterface $targetPackage)
     {
         if ($initialPackage->getSourceUrl() === $targetPackage->getSourceUrl()) {
             if (preg_match('/^https?:\\/\\/github\\.com\\/[^\\/]+\\/[^\\/]+\\.git$/', $initialPackage->getSourceUrl())) {
