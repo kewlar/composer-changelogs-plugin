@@ -4,7 +4,7 @@ namespace Kewlar\Composer\Tests;
 
 use Composer\Package\CompletePackage;
 use Kewlar\Composer\ChangelogsPlugin;
-use Kewlar\Composer\Exception;
+use Kewlar\Composer\Exception\CouldNotCalculateChangelog;
 
 /**
  * Class ChangelogsPluginTest
@@ -60,6 +60,21 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
             [
                 [
                     'name' => 'doctrine/instantiator',
+                    'version' => '1.0.4.0',
+                    'prettyVersion' => '1.0.4',
+                    'sourceUrl' => 'git@github.com:doctrine/instantiator.git',
+                ],
+                [
+                    'name' => 'doctrine/instantiator',
+                    'version' => '1.0.5.0',
+                    'prettyVersion' => '1.0.5',
+                    'sourceUrl' => 'git@github.com:doctrine/instantiator.git',
+                ],
+                'https://github.com/doctrine/instantiator/compare/1.0.4...1.0.5',
+            ],
+            [
+                [
+                    'name' => 'doctrine/instantiator',
                     'version' => '9999999-dev',
                     'prettyVersion' => 'dev-master',
                     'sourceUrl' => 'https://github.com/doctrine/instantiator.git',
@@ -92,11 +107,8 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
     {
         $initialPackage = self::getCompletePackageFromArray($initialPackageConfig);
         $targetPackage = self::getCompletePackageFromArray($targetPackageConfig);
-        $this->setExpectedException(
-            'Kewlar\\Composer\\Exception\\CouldNotCalculateChangelog',
-            '',
-            $expectedExceptionCode
-        );
+        $this->expectException(CouldNotCalculateChangelog::class);
+        $this->expectExceptionCode($expectedExceptionCode);
         ChangelogsPlugin::getChangelog($initialPackage, $targetPackage);
     }
 
@@ -121,7 +133,7 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
                     'prettyVersion' => '1.0.5',
                     'sourceUrl' => 'https://hubgit.com/doctrine/instantiator.git',
                 ],
-                Exception\CouldNotCalculateChangelog::CODE_SOURCEURL_UNSUPPORTED,
+                CouldNotCalculateChangelog::CODE_SOURCEURL_UNSUPPORTED,
             ],
             [
                 [
@@ -136,7 +148,7 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
                     'prettyVersion' => '1.0.5',
                     'sourceUrl' => 'https://localhost/doctrine/instantiator.git',
                 ],
-                Exception\CouldNotCalculateChangelog::CODE_SOURCEURL_UNSUPPORTED,
+                CouldNotCalculateChangelog::CODE_SOURCEURL_UNSUPPORTED,
             ],
             [
                 [
@@ -151,7 +163,7 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
                     'prettyVersion' => '1.0.5',
                     'sourceUrl' => 'https://github.com/doctrine2/instantiator.git',
                 ],
-                Exception\CouldNotCalculateChangelog::CODE_SOURCEURL_MISMATCH,
+                CouldNotCalculateChangelog::CODE_SOURCEURL_MISMATCH,
             ],
             [
                 [
@@ -166,7 +178,7 @@ class ChangelogsPluginTest extends \PHPUnit_Framework_TestCase
                     'prettyVersion' => '1.0.5',
                     'sourceUrl' => 'https://github.com/doctrine/instantiator2.git',
                 ],
-                Exception\CouldNotCalculateChangelog::CODE_SOURCEURL_MISMATCH,
+                CouldNotCalculateChangelog::CODE_SOURCEURL_MISMATCH,
             ],
         ];
     }

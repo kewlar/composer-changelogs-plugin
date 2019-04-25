@@ -113,8 +113,11 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
     public static function getChangelog(PackageInterface $initialPackage, PackageInterface $targetPackage)
     {
         if ($initialPackage->getSourceUrl() === $targetPackage->getSourceUrl()) {
+            $repositoryUrl = $initialPackage->getSourceUrl();
+            // git@github.com:doctrine/instantiator.git -> https://github.com/doctrine/instantiator.git
+            $repositoryUrl = preg_replace('/^git@github\.com:/', 'https://github.com/', $repositoryUrl);
             $reGithubUrl = '/^https?:\\/\\/github\\.com\\/[^\\/]+\\/[^\\/]+\\.git$/';
-            if (preg_match($reGithubUrl, $initialPackage->getSourceUrl())) {
+            if (preg_match($reGithubUrl, $repositoryUrl)) {
                 /*
                  Example:
                  PackageInterface::sourceUrl: https://github.com/sonata-project/SonataCoreBundle.git
@@ -132,12 +135,12 @@ class ChangelogsPlugin implements PluginInterface, EventSubscriberInterface
                 return preg_replace(
                     '/\\.git$/',
                     "/compare/{$initialVersion}...{$targetVersion}",
-                    $targetPackage->getSourceUrl()
+                    $repositoryUrl
                 );
             }
 
             throw new Exception\CouldNotCalculateChangelog(
-                'Unknown changelog; not a GitHub URL: ' . $initialPackage->getSourceUrl(),
+                'Unknown changelog; not a GitHub URL: ' .$repositoryUrl,
                 Exception\CouldNotCalculateChangelog::CODE_SOURCEURL_UNSUPPORTED
             );
         }

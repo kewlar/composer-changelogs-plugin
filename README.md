@@ -1,20 +1,27 @@
 Composer Changelogs Plugin
 ==========================
 
-This plugin allows easier access to package changelogs, when you want to check what's actually been changed, before
-doing `composer update` in your project.
+Whenever you do `composer update` or `composer install` this plugin displays links to GitHub's "Compare Changes" pages for 
+each updated package, so you would have an easier time checking what's actually changed, e.g.
+```
+$ composer install
+Loading composer repositories with package information
+Updating dependencies (including require-dev)                                               
+Prefetching 7 packages 🎶 💨
+  - Downloading (100%)
+    CHANGELOGS:
+        https://github.com/doctrine/dbal/compare/v2.9.1...v2.9.2
+        https://github.com/rollbar/rollbar-php/compare/v1.7.2...v1.7.4
+Package operations: 0 installs, 10 updates, 0 removals
+  - Updating doctrine/dbal (v2.9.1 => v2.9.2): Loading from cache
+    CHANGELOG: https://github.com/doctrine/dbal/compare/v2.9.1...v2.9.2
+  - Updating rollbar/rollbar (v1.7.2 => v1.7.4): Loading from cache
+    CHANGELOG: https://github.com/rollbar/rollbar-php/compare/v1.7.2...v1.7.4
+```
 
-**At the moment this is only a quick spike, it's not yet finished and not nearly enough tested. DO NOT use it in
-production.**
-
-Usage
------
-
-Add this plugin to your composer.json require-dev section, like this:
-
-    "require-dev": {
-        "kewlar/composer-changelogs-plugin": "*@dev"
-    }
-
-And whenever you do `composer update`, the plugin will print links to GitHub's "Compare Changes" pages for each updated
-package, so you would have an easier time checking what's actually changed.
+Installation
+------------
+```bash
+composer require --dev kewlar/composer-changelogs-plugin ^0.1
+```
+That's it!
